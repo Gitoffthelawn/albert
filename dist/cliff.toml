@@ -17,6 +17,7 @@ commit_parsers = [
     { message = "^test", group = "<!-- 6 -->Testing" },
     { message = "^refactor", skip = true },
     { message = "^chore\\(release\\)", skip = true },
+    { message = "^chore\\(plugins\\)", skip = true },
     { message = "^chore\\(deps.*\\)", skip = true },
     { message = "^chore\\(pr\\)", skip = true },
     { message = "^chore\\(pull\\)", skip = true },
