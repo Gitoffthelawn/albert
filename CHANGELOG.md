@@ -45,18 +45,10 @@
 
 - **Albert** · Show composed dir icon on albert dirs
 - **Files** · Default to case insensitive matching for fs browsers
-- **Jetbrains projects** · Global query handling
 - **Spotify** · Add open settings action on error items
-- **VSCode projects** · Support workspaces and singlefile recents
 - **Widgets BoxModel**
   - Linear-gradient brush support
   - Add ubuntu prototype theme
-
-### Performance
-
-#### Plugins
-
-- **Jetbrains projects** · Debounce projects cache update
 
 ### Fixes
 
@@ -66,9 +58,7 @@
 
 #### Plugins
 
-- **PacMan** · Query context variable
-- **Pass** · Pass generate could have empty location
-- **Widgets BoxModel** · Correct input_hint_color default
+- **Widgets BoxModel** · Correct `input_hint_color` default
 
 ### Miscellaneous Tasks
 
@@ -79,7 +69,6 @@
 #### Plugins
 
 - **Albert** · Translation correction
-- **Bitwarden** · Add maintainer
 - **Chromium**
   - Log reason on favicons db copy failure
   - Add some more data directories
@@ -87,7 +76,6 @@
 - **Files**
   - Drop static dir mime type
   - Do not store mime types, fetch mimetype on demand
-- **Jetbrains projects** · Update readme
 - **Spotify** · Update german translations
 - **Widgets BoxModel** · Update README
 
