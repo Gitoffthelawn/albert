@@ -124,27 +124,17 @@ GlobalQueryExecution::Private::Private(GlobalQueryExecution *execution,
 
             const auto total_duration = duration_cast<milliseconds>(system_clock::now() - start_timepoint).count();
 
-            static const auto header  = color::blue + u"╭ Handling╷  Scoring╷ Count╷"_s + color::reset;
-            static const auto body    = color::blue + u"│%1 ms│%2 ms│%3│ #%4 '%5' %6"_s + color::reset;
-            static const auto fheader = color::blue + u"├ Handling│         │ Count╷"_s + color::reset;
-            static const auto footer  = color::blue + u"╰%1 ms╵         ╵%2╵ #%3 '%4' TOTAL"_s + color::reset;
+            static const auto header  = color::blue + u"╭ Handling╷  Scoring╷ Count╷ Query #%1 '%2'"_s + color::reset;
+            static const auto body    = color::blue + u"│%1 ms│%2 ms│%3│ %4"_s + color::reset;
+            static const auto footer  = color::blue + u"╰%1 ms╵         ╵%2╵ TOTAL"_s + color::reset;
 
-            DEBG << header;
-
+            DEBG << header.arg(q->id).arg(q->context.query());
             for (const auto &diag : reduced.handler_diag)
-                DEBG << body
-                            .arg(diag.handling_runtime, 6)
+                DEBG << body.arg(diag.handling_runtime, 6)
                             .arg(diag.scoring_runtime, 6)
                             .arg(diag.item_count, 6)
-                            .arg(q->id)
-                            .arg(q->query(), diag.handler->id());
-
-            DEBG << fheader;
-            DEBG << footer
-                        .arg(total_duration, 6)
-                        .arg(reduced.results.size(), 6)
-                        .arg(q->id)
-                        .arg(q->context.query());
+                            .arg(diag.handler->id());
+            DEBG << footer.arg(total_duration, 6).arg(reduced.results.size(), 6);
 
             unordered_results = ::move(reduced.results);
 
