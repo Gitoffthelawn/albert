@@ -2,6 +2,7 @@
 
 #include "app.h"
 #include "icon.h"
+#include "logging.h"
 #include "matcher.h"
 #include "queryengine.h"
 #include "standarditem.h"
@@ -29,20 +30,20 @@ void TriggersQueryHandler::setFuzzyMatching(bool fuzzy) { fuzzy_ = fuzzy; }
 
 bool TriggersQueryHandler::supportsFuzzyMatching() const { return true; }
 
-shared_ptr<Item> TriggersQueryHandler::makeItem(const QString &trigger, Extension *handler) const
+shared_ptr<Item> TriggersQueryHandler::makeItem(const TriggerHandler &h) const
 {
     return StandardItem::make(
-        handler->id(),
-        QString(trigger).replace(" ", "•"),
-        QString("%1 · %2").arg(handler->name(), handler->description()),
+        h.id,
+        QString(h.trigger).replace(" ", "•"),
+        QString("%1 · %2").arg(h.name, h.description),
         []{ return Icon::grapheme(u"🚀"_s); },
         {{
             "set",
             tr("Set input text"),
-            [trigger]{ App::instance().show(trigger); },
+            [&]{ App::instance().show(h.trigger); },
             false
         }},
-        trigger
+        h.trigger
         );
 }
 
@@ -51,18 +52,26 @@ vector<RankItem> TriggersQueryHandler::rankItems(QueryContext &ctx)
     Matcher matcher(ctx, {.fuzzy = fuzzy_});
     vector<RankItem> r;
 
-    for (shared_lock l(handler_triggers_mutex_);
-         const auto &[t, h] : handler_triggers_)
+    for (shared_lock l(trigger_handlers_mutex_);
+         const auto &h : trigger_handlers_)
         if (!ctx.isValid())
             break;
-        else if (const auto m = matcher.match(t, h->name(), h->id()); m)
-            r.emplace_back(makeItem(t, h), m);
+        else if (const auto m = matcher.match(h.trigger, h.name, h.id); m)
+            r.emplace_back(makeItem(h), m);
 
     return r;
 }
 
 void TriggersQueryHandler::updateTriggers()
 {
-    lock_guard lock(handler_triggers_mutex_);
-    handler_triggers_ = query_engine_.activeTriggerHandlers();
+    try {
+        vector<TriggerHandler> trigger_handlers;
+        for (const auto &[t, h] : query_engine_.activeTriggerHandlers())
+            trigger_handlers.emplace_back(h->id(), h->name(), h->description(), t);
+        lock_guard lock(trigger_handlers_mutex_);
+        trigger_handlers_ = ::move(trigger_handlers);
+    }
+    catch (...) {
+        WARN << u"QueryHandler threw exception while updating TriggersQueryHandler."_s;
+    }
 }

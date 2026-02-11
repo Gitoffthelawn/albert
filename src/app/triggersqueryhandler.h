@@ -22,12 +22,19 @@ public:
 
 private:
 
-    std::shared_ptr<albert::Item> makeItem(const QString &trigger, Extension *handler) const;
+    struct TriggerHandler {
+        QString id;
+        QString name;
+        QString description;
+        QString trigger;
+    };
+
+    std::shared_ptr<albert::Item> makeItem(const TriggerHandler &) const;
     void updateTriggers();
 
     const QueryEngine &query_engine_;
-    std::map<QString, QueryHandler *> handler_triggers_;
-    std::shared_mutex handler_triggers_mutex_;
+    std::vector<TriggerHandler> trigger_handlers_;
+    std::shared_mutex trigger_handlers_mutex_;
     std::atomic_bool fuzzy_;
 
 };
