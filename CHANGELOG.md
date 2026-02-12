@@ -1,3 +1,10 @@
+## v34.0.7 (2026-02-12)
+
+### Fixes
+
+- **Python plugins** · Default trigger overrides not used
+
+
 ## v34.0.6 (2026-02-12)
 
 ### Features

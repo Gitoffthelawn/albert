@@ -3,7 +3,7 @@
 cmake_minimum_required(VERSION 3.26)  # Required by BUILD_LOCAL_INTERFACE generator expression
 
 # dont touch! set by metatool
-set(PROJECT_VERSION 34.0.6)
+set(PROJECT_VERSION 34.0.7)
 
 project(albert
     VERSION ${PROJECT_VERSION}
