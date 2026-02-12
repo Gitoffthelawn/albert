@@ -4,11 +4,6 @@
 {% set_global commits = commits | concat(with=context.commits) -%}
 {% endfor -%}
 
-{% if version -%}
-## {{ version }} ({{ timestamp | date(format="%Y-%m-%d") }})
-{%- else %}
-## [unreleased]
-{%- endif %}
 {% for group, commits in commits | group_by(attribute="group") %}
 ### {{ group | striptags | trim | upper_first }}
 
@@ -41,7 +36,7 @@
 
 {% for name, commits in plugin_commits | group_by(attribute="extra.plugin_name") -%}
 {% if commits | length > 1 -%}
-- **{{ name }}** 
+- **{{ name }}**
 {%- for commit in commits %}
   - {% if commit.breaking %}[**BREAKING**] · {% endif %}
     {%- if commit.scope %}_{{ commit.scope }}_ · {% endif %}
@@ -49,7 +44,7 @@
 {% endfor %}
 {% else -%}
 {% for commit in commits -%}
-- **{{ name }}** 
+- **{{ name }}**
   {%- if commit.breaking %} · [**BREAKING**]{% endif %}
   {%- if commit.scope %} · _{{ commit.scope }}_{% endif %}
   {%- if commit.message %} · {{ commit.message | upper_first }}{% endif %}
