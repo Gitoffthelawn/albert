@@ -1,3 +1,40 @@
+## v34.0.6 (2026-02-12)
+
+### Features
+
+#### Plugins
+
+- **Files** · Treat depth 0 as special value (infty)
+- **Python plugins**
+  - Let default trigger be module name
+  - Add prefpanes plugin
+
+### Fixes
+
+#### Core
+
+- Remove unnecessary redundancy in global query log
+- Avoid holding a lock while calling plugin code
+
+#### Plugins
+
+- **Files** · File item completion
+- **Jetbrains projects** · Python 3.12 problems
+- **Python plugins** · _PyPluginLoader_ · Do not hold GIL while emitting `finished` signal
+- **Timers** · Disable auto input action text
+
+### Miscellaneous Tasks
+
+#### Core
+
+- _cliff_ · Ignore plugin release commits
+- Remove unreleased changes from changelog
+
+#### Plugins
+
+- **PacMan** · Add maintainer
+
+
 ## v34.0.5 (2026-02-04)
 
 ### Features
