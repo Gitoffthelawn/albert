@@ -40,7 +40,6 @@ public:
         connect(&watcher, &QFutureWatcher<void>::finished,
                 this, &GeneratorQueryHandlerExecution::onFetchFinished);
 
-
         watcher.setFuture(QtConcurrent::run([this] -> vector<shared_ptr<Item>>
         {
             // `items()` could also be a regular function that returns a generator.
@@ -56,7 +55,15 @@ public:
     ~GeneratorQueryHandlerExecution()
     {
         cancel();
+
+        // Qt 6.4 QFutureWatcher is broken.
+        // isFinished returns wrong values and waitForFinished blocks forever on finished futures.
+        // TODO(26.04): Remove workaround when dropping Qt < 6.5 support.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
         if (!watcher.isFinished())
+#else
+        if (watcher.isRunning())
+#endif
         {
             DEBG << QString("Busy wait on query: #%1").arg(id);
             watcher.waitForFinished();
