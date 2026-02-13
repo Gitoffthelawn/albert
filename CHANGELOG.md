@@ -1,3 +1,25 @@
+## v34.0.10 (2026-02-13)
+
+### Features
+
+#### Plugins
+
+- **Widgets BoxModel** · Warn on icon rendering taking too long
+
+### Performance
+
+#### Plugins
+
+- **Widgets BoxModel** · Warm up font rendering
+
+### Fixes
+
+#### Core
+
+- _GeneratorQueryHandler_ · Workaround Qt 6.4 deadlocks
+- _BackgroundExecutor_ · Workaround Qt 6.4 deadlocks
+
+
 ## v34.0.9 (2026-02-13)
 
 ### Fixes
