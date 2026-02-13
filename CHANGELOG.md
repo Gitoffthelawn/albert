@@ -1,3 +1,22 @@
+## v34.0.8 (2026-02-13)
+
+### Fixes
+
+#### Plugins
+
+- **Python plugins** · Dependent template breaks almost all builds
+
+### Miscellaneous Tasks
+
+#### Core
+
+- Remove title from cliff templates
+
+#### Plugins
+
+- **GitHub** · Remove leftover debug output
+
+
 ## v34.0.7 (2026-02-12)
 
 ### Fixes
