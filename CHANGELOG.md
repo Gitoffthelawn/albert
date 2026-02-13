@@ -1,3 +1,16 @@
+## v34.0.9 (2026-02-13)
+
+### Fixes
+
+#### Core
+
+- _widgetsboxmodel_ · Accidentially released dev branch
+
+#### Plugins
+
+- **URL Handler** · Disable implict input action
+
+
 ## v34.0.8 (2026-02-13)
 
 ### Fixes
