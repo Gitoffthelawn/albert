@@ -535,6 +535,11 @@ add_executable(${TARGET_APP} MACOSX_BUNDLE "src/main.cpp")
 
 if (APPLE)
 
+    option(BUILD_DEV_BUNDLE "Build a separate dev bundle (saves some headaches on permissions)" OFF)
+    if (BUILD_DEV_BUNDLE)
+        set(BUNDLE_NAME_SUFFIX "Dev")
+        set(GUI_IDENTIFIER_SUFFIX ".dev")
+    endif()
 
     set(ICON_NAME "albert")
     set(ICON_PATH "dist/macos/${ICON_NAME}.icns")
@@ -543,26 +548,24 @@ if (APPLE)
     set_source_files_properties(${ICON_PATH} PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
 
     set_target_properties(${TARGET_APP} PROPERTIES
-        BUNDLE True
-        OUTPUT_NAME "${PROJECT_DISPLAY_NAME}${DEV_BUNDLE_SUFFIX}"
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_BUNDLE_NAME "${PROJECT_DISPLAY_NAME}"  # "${PROJECT_NAME}"
-        MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}"
-        MACOSX_BUNDLE_COPYRIGHT "Copyright (c) 2024 Manuel Schneider"
-        MACOSX_BUNDLE_GUI_IDENTIFIER "org.albertlauncher.albert${DEV_BUNDLE_ID_SUFFIX}"
-        MACOSX_BUNDLE_ICON_FILE "${ICON_NAME}"
-        MACOSX_BUNDLE_INFO_STRING "Albert keyboard launcher"
+        BUNDLE                             TRUE
+        OUTPUT_NAME                        "${PROJECT_DISPLAY_NAME}${BUNDLE_NAME_SUFFIX}"
+        MACOSX_BUNDLE                      TRUE
+        MACOSX_BUNDLE_BUNDLE_NAME          "${PROJECT_DISPLAY_NAME}"
+        MACOSX_BUNDLE_BUNDLE_VERSION       "${CMAKE_PROJECT_VERSION}"
+        MACOSX_BUNDLE_COPYRIGHT            "Copyright (c) 2026 Manuel Schneider"
+        MACOSX_BUNDLE_GUI_IDENTIFIER       "org.albertlauncher.albert${GUI_IDENTIFIER_SUFFIX}"
+        MACOSX_BUNDLE_ICON_FILE            "${ICON_NAME}"
+        MACOSX_BUNDLE_INFO_STRING          "Albert keyboard launcher"
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${CMAKE_PROJECT_VERSION}"
     )
 
-    # Avoid regranting permissions all the time
-    option(BUILD_DEV_BUNDLE "Build a separate dev bundle (saves some headaches on permissions)" OFF)
+
+
+
     if (BUILD_DEV_BUNDLE)
-        set(DEV_BUNDLE_SUFFIX "Dev")
-        set(DEV_BUNDLE_ID_SUFFIX ".dev")
-
+        # Avoid regranting permissions all the time
         set(CODESIGN_IDENTITY "Albert Dev Code Signing")
-
         add_custom_command(
           TARGET ${TARGET_APP} POST_BUILD
           COMMAND codesign --force --deep --sign "${CODESIGN_IDENTITY}" "$<TARGET_BUNDLE_DIR:${TARGET_APP}>"
