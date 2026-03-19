@@ -315,7 +315,7 @@ configure_file(
     @ONLY
 )
 
-find_package(Qt6 6.4 REQUIRED COMPONENTS # QString::operator""_s
+find_package(Qt6 6.6 REQUIRED COMPONENTS  # QPalette::Accent
     Core
     Concurrent
     Network
