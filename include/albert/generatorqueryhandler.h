@@ -1,8 +1,8 @@
-// SPDX-FileCopyrightText: 2025 Manuel Schneider
+// SPDX-FileCopyrightText: 2025-2026 Manuel Schneider
 // SPDX-License-Identifier: MIT
 
 #pragma once
-#include <albert/queryhandler.h>
+#include <albert/asyncgeneratorqueryhandler.h>
 #include <memory>
 #include <vector>
 namespace QCoro { template<typename T> class Generator; }
@@ -26,7 +26,7 @@ using ItemGenerator = QCoro::Generator<std::vector<std::shared_ptr<albert::Item>
 ///
 /// \ingroup util_query
 ///
-class ALBERT_EXPORT GeneratorQueryHandler : public QueryHandler
+class ALBERT_EXPORT GeneratorQueryHandler : public AsyncGeneratorQueryHandler
 {
 public:
     ///
@@ -36,16 +36,13 @@ public:
     ///
     /// \note Executed in a background thread.
     ///
-    /// \note GCC-13 does not support returning temporary values in generators.
-    ///       So for as long as Ubuntu 24.04 is supported, we have to return lvalues.
-    ///
     virtual ItemGenerator items(QueryContext &context) = 0;
 
 protected:
     /// Destructs the handler.
     ~GeneratorQueryHandler() override;
 
-    /// Returns a threaded synchronous generator query execution for _context_.
-    std::unique_ptr<QueryExecution> execution(QueryContext &context) override;
+    /// Async wrapper that runs the synchronous `items()` in a worker thread.
+    AsyncItemGenerator asyncItemGenerator(QueryContext &context) override final;
 };
 }  // namespace albert

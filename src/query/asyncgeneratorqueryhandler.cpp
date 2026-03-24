@@ -11,7 +11,7 @@ using namespace std;
 
 class AsyncExecution final : public QueryExecution
 {
-    unique_ptr<AsyncItemGenerator> generator;
+    optional<AsyncItemGenerator> generator;
     optional<AsyncItemGenerator::iterator> iterator;
     QCoro::Task<> fetch_task;
     bool active;
@@ -20,8 +20,7 @@ public:
 
     AsyncExecution(QueryContext &ctx, AsyncItemGenerator &&gen)
         : QueryExecution(ctx)
-        , generator(make_unique<AsyncItemGenerator>(::move(gen)))
-        , iterator(nullopt)
+        , generator(::move(gen))
         , active(false)
     {
         fetchMore();
@@ -31,7 +30,8 @@ public:
 
     void cancel() override
     {
-        generator.reset();
+        iterator.reset();
+        generator.reset();  // Forces frame destruction and thus cancellation of the coroutine.
         if (active)
             emit activeChanged(active = false);
     }
@@ -39,10 +39,7 @@ public:
     bool isActive() const override { return active; }
 
     bool canFetchMore() const override
-    {
-        return context.isValid()
-               && (!iterator || iterator != generator.get()->end());
-    }
+    { return context.isValid() && (!iterator || *iterator != generator->end()); }
 
     void fetchMore() override
     {
@@ -54,19 +51,22 @@ public:
     {
         emit activeChanged(active = true);
 
-        try {
-
-            if (iterator == nullopt)
-                iterator = co_await generator->begin();
-            else
+        try
+        {
+            if (iterator)
                 co_await ++(*iterator);
+            else
+                iterator = co_await generator->begin();
 
             if (*iterator != generator->end())
                 results.add(::move(**iterator));
-
-        } catch (const exception &e) {
+        }
+        catch (const exception &e)
+        {
             WARN << u"AsyncGeneratorQueryHandler threw exception:\n"_s << e.what();
-        } catch (...) {
+        }
+        catch (...)
+        {
             WARN << u"AsyncGeneratorQueryHandler threw unknown exception."_s;
         }
 
@@ -77,4 +77,4 @@ public:
 AsyncGeneratorQueryHandler::~AsyncGeneratorQueryHandler() {}
 
 unique_ptr<QueryExecution> AsyncGeneratorQueryHandler::execution(QueryContext &ctx)
-{ return make_unique<AsyncExecution>(ctx, items(ctx)); }
+{ return make_unique<AsyncExecution>(ctx, asyncItemGenerator(ctx)); }
